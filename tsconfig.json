@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "moduleResolution": "Node",
+    "strict": false,
+    "alwaysStrict": true,
+    "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "esModuleInterop": true,
+    "target": "es2017",
+    "noEmit": true,
+    "jsx": "react",
+    "skipLibCheck": true,
+    "baseUrl": "./src"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

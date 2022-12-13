@@ -1,0 +1,20 @@
+{
+    "files.eol": "auto",
+    "typescript.referencesCodeLens.enabled": true,
+    "editor.suggest.localityBonus": true,
+    "editor.snippetSuggestions": "none",
+    "eslint.lintTask.enable": true,
+    "eslint.run": "onType",
+    "eslint.validate": ["typescript", "typescriptreact"],
+    "eslint.lintTask.options": "-c ./.eslintrc.js --ignore-path ./.eslintignore .",
+    "eslint.alwaysShowStatus": true,
+    "eslint.packageManager": "npm",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true,
+    },
+    "editor.wordWrap": "on",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.formatOnSave": false,
+    "editorconfig.generateAuto": false,
+    "files.trimTrailingWhitespace": true,
+  }

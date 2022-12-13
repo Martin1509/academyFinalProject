@@ -1,0 +1,15 @@
+*.iws
+*.ipr
+*.iml
+.idea
+.history
+node_modules
+dist
+/*.zip
+.env.dev
+.env.production
+npm-debug.log
+test/e2e/videos
+test/e2e/screenshots
+coverage
+.gradle

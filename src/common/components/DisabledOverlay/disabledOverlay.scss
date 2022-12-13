@@ -1,0 +1,41 @@
+.disabled-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 101;
+    animation: animate-opacity 0.5s;
+    display: none;
+
+    &.active {
+        display: block;
+    }
+
+    .overlay {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background: black;
+        opacity: 0.1;
+    }
+
+    .loading {
+        opacity: 0.5;
+        min-height: 0 !important;
+
+        .message {
+            color: black;
+        }
+    }
+
+    @keyframes animate-opacity {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+}

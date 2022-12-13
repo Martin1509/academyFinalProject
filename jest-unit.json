@@ -1,0 +1,20 @@
+{
+  "roots": [
+    "<rootDir>/src"
+  ],
+  "modulePaths": [
+    "<rootDir>/src"
+  ],
+  "moduleNameMapper": {
+    "^.+\\.(css|less|scss)$": "identity-obj-proxy",
+    "@common/(.*)": "<rootDir>/../common/src/$1"
+  },
+  "transform": {
+    "^.+\\.(t|j)sx?$": "ts-jest"
+  },
+  "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+  "moduleFileExtensions": ["js", "json", "ts", "tsx"],
+  "setupFilesAfterEnv": [
+    "@testing-library/jest-dom/extend-expect"
+  ]
+}
