@@ -3,6 +3,7 @@ const {merge} = require('webpack-merge');
 const common = require('./webpack.common.js');
 const DotenvPlugin = require('dotenv-webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const { NONAME } = require('dns');
 
 module.exports = merge(common, {
   devtool: 'eval-cheap-module-source-map',
@@ -11,6 +12,7 @@ module.exports = merge(common, {
       directory: path.join(__dirname, 'public')
     },
     client: {
+      logging: 'none', // to suppress logs from print to console
       progress: true,
       overlay: {
         warnings: false,

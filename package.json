@@ -13,8 +13,8 @@
     "test:watch": "npm run test -- --watch",
     "test:e2e": "playwright test --config=test/e2e/integrations/playwright.config.ts",
     "test:e2e:open": "playwright test --config=test/e2e/integrations/playwright.config.ts --headed",
-    "test:mock-server": "./test/mock-server/server.js",
-    "test:mock-server:no-write": "./test/mock-server/server.js --no-write",
+    "test:mock-server": "node ./test/mock-server/server.js",
+    "test:mock-server:no-write": "node ./test/mock-server/server.js --no-write",
     "stylelint": "npx stylelint 'src/**/*.{css,scss}'",
     "stylelint-fix": "npx stylelint 'src/**/*.{css,scss}' --fix",
     "lint": "npx eslint .",
@@ -47,6 +47,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
+    "@emotion/eslint-plugin": "^11.10.0",
     "@playwright/test": "^1.20.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@testing-library/jest-dom": "^5.16.3",
@@ -87,6 +88,7 @@
     "postcss-loader": "^6.2.1",
     "postcss-scss": "^4.0.3",
     "react-refresh": "^0.11.0",
+    "react-router-dom": "^6.4.5",
     "sass-loader": "^13.2.0",
     "sinon": "^13.0.1",
     "style-loader": "^3.3.1",
@@ -107,16 +109,24 @@
     "workbox-webpack-plugin": "^6.5.2"
   },
   "dependencies": {
+    "@emotion/css": "^11.10.5",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.10.17",
+    "@mui/x-date-pickers": "^5.0.10",
     "axios": "^0.26.1",
     "core-js": "^3.21.1",
+    "dayjs": "^1.11.7",
+    "formik": "^2.2.9",
+    "moment": "^2.29.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-redux": "^7.2.7",
     "react-router": "^6.3.0",
-    "react-router-dom": "^6.3.0",
     "reduce-reducers": "^1.0.4",
     "redux": "^4.1.2",
     "redux-first-history": "^5.0.8",
-    "redux-thunk": "^2.4.1"
+    "redux-thunk": "^2.4.1",
+    "yup": "^0.32.11"
   }
 }

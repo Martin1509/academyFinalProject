@@ -1,20 +1,22 @@
 import React from 'react';
+import {Route, Routes} from 'react-router-dom';
+import {Form} from './Form';
 
 const App = () => {
   return (
     <>
-      Hello World
-      {/* Add your components and routes here */}
-      {/* This is also a good place for wrapping context providers */}
-      {/* Example:
-                <Routes>
-                    <Route path="/login" element={<Login/>}/>
-                    <Route path="/forgot-password" element={<ForgotPassword/>}/>
-                    <Route path="/" element={<AuthRouting/>}/>
-                </Routes>
-            */}
+      <AppRoutes/>
     </>
   );
 };
+
+function AppRoutes(){
+  return (
+    <Routes>
+      <Route path="/" element={<Form/>}/>
+      <Route path="*" element={<Form/>}/>
+    </Routes>
+  );
+}
 
 export default App;

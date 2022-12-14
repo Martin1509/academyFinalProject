@@ -18,6 +18,13 @@ server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
 // Custom route processing
+server.get('/', (req, res)=>{
+    res.jsonp(router.db.get("attendees"))
+})
+
+server.get('/attendees/', (req, res)=>{
+    res.jsonp(router.db.get("attendees"))
+})
 
 
 // Custom routes

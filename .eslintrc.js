@@ -5,7 +5,8 @@ module.exports = {
     'react',
     'react-hooks',
     'jsx-a11y',
-    'babel'
+    'babel',
+    '@emotion'
   ],
   globals: {
     fetch: false,
@@ -79,7 +80,7 @@ module.exports = {
       'never'
     ],
     'no-unused-vars': [
-      'error',
+      'warn',
       {
         'vars': 'local',
         'args': 'after-used'
@@ -160,7 +161,7 @@ module.exports = {
       }
     ],
     'react/no-unescaped-entities': 'error',
-    'react/no-unknown-property': 'error',
+    'react/no-unknown-property': ['error', {'ignore': ['css']}],
     'react/no-unused-prop-types': 'error',
     'react/prefer-es6-class': [
       'error',
