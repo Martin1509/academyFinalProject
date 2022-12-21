@@ -1,7 +1,7 @@
 // /** @tsx jsx */
 // import {jsx} from '@emotion/react';
 
-import * as React from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import {Formik} from 'formik';
 import {css} from '@emotion/react';
@@ -11,15 +11,22 @@ import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 
+import {Dropzone} from './Dropzone';
+
 const FormContainer = styled.div(() => ({
   backgroundColor: '#f7f7f7',
   height: '100vh',
   textAlign: 'center'
 }));
 
+// const FormContainer = styled.div`
+// backgroundColor: '#f7f7f7',
+// height: '100vh',
+// textAlign: 'center'
+// `;
+
 const formStyle = css({
-  boxSizing: 'border-box',
-  color: 'pink'
+  boxSizing: 'border-box'
 });
 
 const inputStyle = css({
@@ -39,7 +46,7 @@ const FormSchema = Yup.object().shape({
     .max(80, 'Too Long!')
     .matches(
       /^(?:[a-zA-Z0-9!#$%&‘*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&‘*+/=?^_`{|}~-]+)*)@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)$/,
-      'Date is in incorrect format!'
+      'Email is in incorrect format!'
     )
     .required('Required'),
   birthdate: Yup.date()
@@ -49,7 +56,10 @@ const FormSchema = Yup.object().shape({
       const maxDate = new Date();
       minDate.setFullYear(minDate.getFullYear() - 18);
       maxDate.setFullYear(maxDate.getFullYear() - 99);
-      if (maxDate.getTime() <= new Date(value!).getTime() && new Date(value!).getTime() <= minDate.getTime()) {
+      if (
+        maxDate.getTime() <= new Date(value!).getTime() &&
+        new Date(value!).getTime() <= minDate.getTime()
+      ) {
         return true;
       }
       return false;
@@ -58,6 +68,9 @@ const FormSchema = Yup.object().shape({
 });
 
 const Form: React.FC = () => {
+  const [, setFileSelected] = React.useState<File>();
+  const [imagePreview, setImagePreview] = React.useState<string>('');
+
   return (
     <FormContainer>
       <div css={formStyle}>
@@ -85,7 +98,7 @@ const Form: React.FC = () => {
               <div>
                 <TextField
                   css={inputStyle}
-                  id="outlined-basic"
+                  id="name"
                   label="Name"
                   variant="outlined"
                   name="name"
@@ -98,7 +111,7 @@ const Form: React.FC = () => {
               <div>
                 <TextField
                   css={inputStyle}
-                  id="outlined-basic"
+                  id="email"
                   label="Email"
                   variant="outlined"
                   name="email"
@@ -118,9 +131,12 @@ const Form: React.FC = () => {
                     onChange={(data) => setFieldValue('birthdate', data)}
                     renderInput={(params) => (
                       <TextField
-                        name='birthdate'
+                        id='birthdate'
+                        name="birthdate"
                         {...params}
-                        error={errors.birthdate && touched.birthdate ? true : false}
+                        error={
+                          errors.birthdate && touched.birthdate ? true : false
+                        }
                         helperText={
                           errors.birthdate &&
                           touched.birthdate &&
@@ -134,7 +150,7 @@ const Form: React.FC = () => {
               <div>
                 <TextField
                   css={inputStyle}
-                  id="outlined-basic"
+                  id="info"
                   label="More info"
                   variant="outlined"
                   name="info"
@@ -143,6 +159,14 @@ const Form: React.FC = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
+              </div>
+              <Dropzone setFileSelected={setFileSelected} setImagePreview={setImagePreview}/>
+              <div css={inputStyle}>
+                {imagePreview != undefined && imagePreview != '' ? (
+                  <img css={{height: '150px'}} src={imagePreview} alt="img"/>
+                ) : (
+                  <></>
+                )}
               </div>
               <Button
                 css={inputStyle}
