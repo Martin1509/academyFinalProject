@@ -10,6 +10,8 @@ import * as Yup from 'yup';
 import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import axios from 'axios';
+import moment from 'moment';
 
 import {Dropzone} from './Dropzone';
 
@@ -70,6 +72,7 @@ const FormSchema = Yup.object().shape({
 const Form: React.FC = () => {
   const [, setFileSelected] = React.useState<File>();
   const [imagePreview, setImagePreview] = React.useState<string>('');
+  console.log(imagePreview);
 
   return (
     <FormContainer>
@@ -78,10 +81,18 @@ const Form: React.FC = () => {
           initialValues={{email: '', name: '', info: '', birthdate: new Date()}}
           validationSchema={FormSchema}
           onSubmit={(values, {setSubmitting}) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              setSubmitting(false);
-            }, 400);
+            axios.post('http://localhost:8081/attendees', {
+              id: 'uuid' + Math.floor(Math.random() * 1000),
+              name: values.name,
+              'e-mail': values.email,
+              birthdate: (moment(values.birthdate.toString())).format('D.M.YYYY').toString(),
+              moreInfo: values.info,
+              file: imagePreview
+            }).catch( (error) => {
+              console.log(error);
+            });
+
+            setSubmitting(false);
           }}
         >
           {({
