@@ -1,10 +1,8 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {css} from '@emotion/react';
 
 const baseStyle = css({
-  display: 'inline-block',
-  maxWidth: '400px',
   padding: '20px',
   marginTop: '20px',
   borderWidth: 2,
@@ -14,53 +12,47 @@ const baseStyle = css({
   backgroundColor: '#fafafa',
   color: '#bdbdbd',
   outline: 'none',
-  transition: 'border .24s ease-in-out'
+  transition: 'all .24s ease-in-out',
+  '&:hover,&:focus': {
+    borderColor: '#2196f3',
+    color: 'black'
+  }
 });
 
-// const focusedStyle = css({
-//   //...baseStyle,
-//   borderColor: '#2196f3'
-// });
-
 interface DropzoneProps {
-  setFileSelected: (file: File | undefined) => void;
+  imagePreview: string;
   setImagePreview: (file: string) => void;
 }
 
-const Dropzone: React.FC<DropzoneProps> = ({setFileSelected, setImagePreview}) => {
+const Dropzone: React.FC<DropzoneProps> = ({setImagePreview, imagePreview}) => {
   const onDrop = useCallback((acceptedFiles) => {
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
+    const file = acceptedFiles[0];
+    const reader = new FileReader();
 
-      reader.readAsDataURL(file);
-      reader.onabort = () => console.log('file reading was aborted');
-      reader.onerror = () => console.log('file reading has failed');
-      reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
+    reader.readAsDataURL(file);
+    reader.onabort = () => console.log('file reading was aborted');
+    reader.onerror = () => console.log('file reading has failed');
+    reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
 
-        //const binaryStr = reader.result;
-        if (file.type.includes('image')) {
-          setImagePreview(readerEvent.target!.result as string);
-        }
-      };
-      reader.readAsArrayBuffer(file);
-      setFileSelected(file);
-    });
-  }, [setFileSelected, setImagePreview]);
+      //const binaryStr = reader.result;
+      if (file.type.includes('image')) {
+        setImagePreview(readerEvent.target!.result as string);
+      }
+    };
+  }, [setImagePreview]);
   const {getRootProps, getInputProps} =
     useDropzone({onDrop});
 
-  const style = useMemo(
-    () => ({
-      ...baseStyle
-    }),
-    []
-  );
-
   return (
     <section >
-      <div {...getRootProps()} css={style}>
+      <div {...getRootProps()} css={baseStyle}>
         <input {...getInputProps()}/>
         <p>Drag & drop some files here, or click to select files</p>
+      </div>
+      <div css={css`margin-top: 20px;`}>
+        {imagePreview !== '' &&
+          <img css={css`max-width: 100%`} src={imagePreview} alt="img"/>
+        }
       </div>
     </section>
   );

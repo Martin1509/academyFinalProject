@@ -1,7 +1,7 @@
 // /** @tsx jsx */
 // import {jsx} from '@emotion/react';
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from '@emotion/styled';
 import {Formik} from 'formik';
 import {css} from '@emotion/react';
@@ -10,10 +10,14 @@ import * as Yup from 'yup';
 import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import axios from 'axios';
 import moment from 'moment';
+import {v4 as uuidv4} from 'uuid';
 
+import {createAttendee, getAllAttendees} from 'app/services/attendeesService';
 import {Dropzone} from './Dropzone';
+import {ItemList} from './ItemList';
+import {Attendee} from 'app/models/App/Attendee';
+import useInvalidate from './useInvalidate';
 
 const FormContainer = styled.div(() => ({
   backgroundColor: '#f7f7f7',
@@ -21,14 +25,9 @@ const FormContainer = styled.div(() => ({
   textAlign: 'center'
 }));
 
-// const FormContainer = styled.div`
-// backgroundColor: '#f7f7f7',
-// height: '100vh',
-// textAlign: 'center'
-// `;
-
 const formStyle = css({
-  boxSizing: 'border-box'
+  display: 'inline-block',
+  maxWidth: '500px'
 });
 
 const inputStyle = css({
@@ -70,9 +69,15 @@ const FormSchema = Yup.object().shape({
 });
 
 const Form: React.FC = () => {
-  const [, setFileSelected] = React.useState<File>();
-  const [imagePreview, setImagePreview] = React.useState<string>('');
-  console.log(imagePreview);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [valid, invalidate] = useInvalidate();
+
+  useEffect(() => {
+    getAllAttendees().then((data) => {
+      setAttendees(data);
+    });
+  }, [valid]);
 
   return (
     <FormContainer>
@@ -81,16 +86,17 @@ const Form: React.FC = () => {
           initialValues={{email: '', name: '', info: '', birthdate: new Date()}}
           validationSchema={FormSchema}
           onSubmit={(values, {setSubmitting}) => {
-            axios.post('http://localhost:8081/attendees', {
-              id: 'uuid' + Math.floor(Math.random() * 1000),
+            createAttendee({
+              id: uuidv4(),
               name: values.name,
               'e-mail': values.email,
               birthdate: (moment(values.birthdate.toString())).format('D.M.YYYY').toString(),
               moreInfo: values.info,
               file: imagePreview
-            }).catch( (error) => {
-              console.log(error);
-            });
+            }).then(() => invalidate())
+              .catch( (error) => {
+                console.log(error);
+              });
 
             setSubmitting(false);
           }}
@@ -113,6 +119,7 @@ const Form: React.FC = () => {
                   label="Name"
                   variant="outlined"
                   name="name"
+                  fullWidth
                   error={errors.name && touched.name ? true : false}
                   helperText={errors.name && touched.name && errors.name}
                   onChange={handleChange}
@@ -126,6 +133,7 @@ const Form: React.FC = () => {
                   label="Email"
                   variant="outlined"
                   name="email"
+                  fullWidth
                   error={errors.email && touched.email ? true : false}
                   helperText={errors.email && touched.email && errors.email}
                   onChange={handleChange}
@@ -137,13 +145,14 @@ const Form: React.FC = () => {
                   <DesktopDatePicker
                     css={inputStyle}
                     label="Birthdate"
-                    inputFormat="MM.DD.YYYY"
+                    inputFormat="DD.MM.YYYY"
                     value={values.birthdate}
                     onChange={(data) => setFieldValue('birthdate', data)}
                     renderInput={(params) => (
                       <TextField
                         id='birthdate'
                         name="birthdate"
+                        fullWidth
                         {...params}
                         error={
                           errors.birthdate && touched.birthdate ? true : false
@@ -165,23 +174,17 @@ const Form: React.FC = () => {
                   label="More info"
                   variant="outlined"
                   name="info"
+                  fullWidth
                   error={errors.info ? true : false}
                   helperText={errors.info}
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
               </div>
-              <Dropzone setFileSelected={setFileSelected} setImagePreview={setImagePreview}/>
-              <div css={inputStyle}>
-                {imagePreview != undefined && imagePreview != '' ? (
-                  <img css={{height: '150px'}} src={imagePreview} alt="img"/>
-                ) : (
-                  <></>
-                )}
-              </div>
+              <Dropzone setImagePreview={setImagePreview} imagePreview={imagePreview}/>
               <Button
-                css={inputStyle}
                 variant="outlined"
+                fullWidth
                 type="submit"
                 disabled={isSubmitting}
               >
@@ -191,6 +194,7 @@ const Form: React.FC = () => {
           )}
         </Formik>
       </div>
+      <ItemList attendees={attendees} invalidate={invalidate}/>
     </FormContainer>
   );
 };

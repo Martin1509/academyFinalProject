@@ -112,6 +112,7 @@
     "@emotion/css": "^11.10.5",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.10.17",
     "@mui/x-date-pickers": "^5.0.10",
     "axios": "^0.26.1",
@@ -120,6 +121,7 @@
     "formik": "^2.2.9",
     "moment": "^2.29.4",
     "react": "^18.0.0",
+    "react-contenteditable": "^3.3.6",
     "react-dom": "^18.0.0",
     "react-dropzone": "^14.2.3",
     "react-redux": "^7.2.7",
@@ -128,6 +130,7 @@
     "redux": "^4.1.2",
     "redux-first-history": "^5.0.8",
     "redux-thunk": "^2.4.1",
+    "uuid": "^9.0.0",
     "yup": "^0.32.11"
   }
 }

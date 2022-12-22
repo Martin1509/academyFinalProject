@@ -35,8 +35,8 @@ module.exports = {
     }
   },
   extends: [
-    'plugin:@typescript-eslint/recommended',
     'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:jsx-a11y/recommended'
   ],
@@ -80,7 +80,7 @@ module.exports = {
       'never'
     ],
     'no-unused-vars': [
-      'warn',
+      'off',
       {
         'vars': 'local',
         'args': 'after-used'
