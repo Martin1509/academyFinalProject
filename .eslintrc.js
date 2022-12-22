@@ -93,9 +93,7 @@ module.exports = {
         'omitLastInOneLineBlock': true
       }
     ],
-    'no-console': [
-      'warn'
-    ],
+    'no-console': 'off',
     'space-before-function-paren': [
       'error',
       {
