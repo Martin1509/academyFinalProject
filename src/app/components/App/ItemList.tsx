@@ -1,12 +1,11 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 import {css} from '@emotion/react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
-import IconButton from '@mui/material/IconButton';
-import ContentEditable, {ContentEditableEvent} from 'react-contenteditable';
+import update from 'immutability-helper';
+import {DndProvider} from 'react-dnd';
+import {HTML5Backend} from 'react-dnd-html5-backend';
 
 import {Attendee} from 'app/models/App/Attendee';
-import {deleteAttendee, updateAttendee} from 'app/services/attendeesService';
+import {Item} from './Item';
 
 interface ItemListProps{
     attendees: Attendee[];
@@ -14,135 +13,57 @@ interface ItemListProps{
 }
 
 const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
-  const [localChanges, setChanges] = useState({});
+  const [localAttendees, setLocalAttendees] = useState<Attendee[]>([]);
 
-  const infoList = {};
-  attendees.forEach((attendee) => {
-    const localChangesCopy = {...localChanges};
-    let changed = false;
+  useEffect(() => {
+    setLocalAttendees(attendees);
+  }, [attendees]);
 
-    if (localChanges[attendee.id] === attendee.moreInfo){
-      delete localChangesCopy[attendee.id];
-      changed = true;
-    }
+  const moveAttendee = useCallback((dragIndex: number, hoverIndex: number) => {
+    setLocalAttendees((prevAttd: Attendee[]) =>
+      update(prevAttd, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, prevAttd[dragIndex] as Attendee]
+        ]
+      }),
+    );
+  }, []);
 
-    if (localChanges[attendee.id] != undefined){
-      infoList[attendee.id] = localChanges[attendee.id];
-    } else {
-      infoList[attendee.id] = attendee.moreInfo;
-    }
+  const renderAttendee = useCallback(
+    (attendee: Attendee, index: number) => {
+      return (
+        <Item
+          key={attendee.id}
+          attendee={attendee}
+          index={index}
+          invalidate={invalidate}
+          moveAttendee={moveAttendee}
+          updateAttendees={updateAttendees}
+        />
+      );
+    },
+    [invalidate, moveAttendee],
+  );
 
-    changed && setChanges(localChangesCopy);
-  });
-
-  const onChange = (e: ContentEditableEvent, attendeeId: string) => {
-    if (attendees.filter(x => x.id === attendeeId)[0].moreInfo === e.target.value!){
-      const localChangesCopy = {...localChanges};
-      delete localChangesCopy[attendeeId];
-      setChanges(localChangesCopy);
-    } else {
-      setChanges((prev) => ({
-        ...prev,
-        [attendeeId]: e.target.value!
-      }));
-    }
-  };
-
-  const handleUpdate = (attendeeId: string) => {
-    updateAttendee(attendeeId, {moreInfo: localChanges[attendeeId]}).then(() => {
-      invalidate();
-    });
+  const updateAttendees = () => {
+    console.log('teraz');
   };
 
   return (
-    <div css={css`
-  display: inline-block;
-  margin-top: 40px;
-  width: 80%;
-  flex-direction: row;
-`}
-    >
-      {attendees.map((attendee, index) => (
-        <div key={attendee.id}
-          css={css`
-        display: flex;
-        background-color: #ebebeb;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 10px;
-        border: solid 1px black;
-        &:hover,&:focus{
-          background-color: #dbdbdb;
-        };
-        gap: 10px;
+    <DndProvider backend={HTML5Backend}>
+      <div css={css`
+        display: inline-block;
+        margin-top: 40px;
+        width: 80%;
+        flex-direction: row;
       `}
-        >
-          <div css={css`
-          width: 2%;
-          text-align: left;
-          `}
-          >
-            {index}
-          </div>
-          <div css={css`
-          width: 10%;
-          text-align: left;
-          `}
-          >
-            {attendee.file !== '' &&
-            <img css={css`max-width: 100%; max-height: 18px`} src={attendee.file} alt="img"/>
-            }
-          </div>
-          <div css={css`
-          width: 20%;
-          text-align: left;
-          `}
-          >
-            {attendee.name}
-          </div>
-          <div css={css`
-          width: 25%;
-          text-align: left;
-          `}
-          >
-            {attendee['e-mail']}
-          </div>
-          <div css={css`
-          flex: 1;
-          margin: 0;
-          text-align: left;
-          `}
-          >
-            <ContentEditable
-              css={css`display: inline-block; width: calc(100% - 25px);`}
-              html={infoList[attendee.id]}
-              onChange={(e) => onChange(e, attendee.id)}
-            />
-            {localChanges[attendee.id] != undefined &&
-              <div css={css`display: inline-block; float: right;`}>
-                <IconButton
-                  aria-label="delete"
-                  size='small'
-                  css={css`padding: 0px; margin-top: -3px;`}
-                  onClick={() => handleUpdate(attendee.id)}
-                >
-                  <SaveIcon fontSize='inherit'/>
-                </IconButton>
-              </div>}
-          </div>
-          <IconButton
-            aria-label="delete"
-            size='small'
-            css={css`padding: 0px;`}
-            onClick={() => {
-              deleteAttendee(attendee.id!).then(() => invalidate());
-            }}
-          >
-            <DeleteIcon fontSize='inherit'/>
-          </IconButton>
-        </div>
-      ))}
-    </div>);
+      >
+        {localAttendees.sort((a,b) => b.orderIndex + a.orderIndex).map((attendee, index) => (
+          renderAttendee(attendee, index)
+        ))}
+      </div>
+    </DndProvider>);
 };
 
 export {ItemList};

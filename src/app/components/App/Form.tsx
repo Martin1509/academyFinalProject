@@ -18,6 +18,7 @@ import {Dropzone} from './Dropzone';
 import {ItemList} from './ItemList';
 import {Attendee} from 'app/models/App/Attendee';
 import useInvalidate from './useInvalidate';
+import {getHigherOrderNumber} from 'app/utils/formUtils';
 
 const FormContainer = styled.div(() => ({
   backgroundColor: '#f7f7f7',
@@ -88,6 +89,7 @@ const Form: React.FC = () => {
           onSubmit={(values, {setSubmitting}) => {
             createAttendee({
               id: uuidv4(),
+              orderIndex: getHigherOrderNumber(attendees) + 1,
               name: values.name,
               'e-mail': values.email,
               birthdate: (moment(values.birthdate.toString())).format('D.M.YYYY').toString(),

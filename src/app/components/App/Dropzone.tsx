@@ -34,7 +34,6 @@ const Dropzone: React.FC<DropzoneProps> = ({setImagePreview, imagePreview}) => {
     reader.onerror = () => console.log('file reading has failed');
     reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
 
-      //const binaryStr = reader.result;
       if (file.type.includes('image')) {
         setImagePreview(readerEvent.target!.result as string);
       }
