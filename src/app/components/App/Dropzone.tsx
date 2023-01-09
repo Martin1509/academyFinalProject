@@ -40,11 +40,17 @@ const Dropzone: React.FC<DropzoneProps> = ({setImagePreview, imagePreview}) => {
       }
     };
   }, [setImagePreview]);
+
   const {getRootProps, getInputProps} =
-    useDropzone({onDrop});
+    useDropzone({
+      onDrop,
+      multiple: false,
+      accept: {
+        'image/*': ['.jpeg', '.png']
+      }});
 
   return (
-    <section >
+    <section>
       <div {...getRootProps()} css={baseStyle}>
         <input {...getInputProps()}/>
         <p>Drag & drop some files here, or click to select files</p>

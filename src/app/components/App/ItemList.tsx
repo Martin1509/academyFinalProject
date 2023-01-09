@@ -14,7 +14,7 @@ interface ItemListProps{
 }
 
 const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
-  const [localChanges, setChanges] = useState({});
+  const [localChanges, setLocalChanges] = useState({});
 
   const infoList = {};
   attendees.forEach((attendee) => {
@@ -32,16 +32,16 @@ const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
       infoList[attendee.id] = attendee.moreInfo;
     }
 
-    changed && setChanges(localChangesCopy);
+    changed && setLocalChanges(localChangesCopy);
   });
 
   const onChange = (e: ContentEditableEvent, attendeeId: string) => {
     if (attendees.filter(x => x.id === attendeeId)[0].moreInfo === e.target.value!){
       const localChangesCopy = {...localChanges};
       delete localChangesCopy[attendeeId];
-      setChanges(localChangesCopy);
+      setLocalChanges(localChangesCopy);
     } else {
-      setChanges((prev) => ({
+      setLocalChanges((prev) => ({
         ...prev,
         [attendeeId]: e.target.value!
       }));
