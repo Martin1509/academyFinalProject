@@ -35,7 +35,6 @@ const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
 
   const updateAttendee = useCallback((id: string) => {
     const newId = getOrderId(localAttendees, id);
-    console.log(newId);
     updateAttendeeRequest(id, {orderIndex: newId}).then(() => {
       invalidate();
     });
