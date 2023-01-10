@@ -6,6 +6,8 @@ import {HTML5Backend} from 'react-dnd-html5-backend';
 
 import {Attendee} from 'app/models/App/Attendee';
 import {Item} from './Item';
+import {getOrderId} from 'app/utils/itemListUtils';
+import {updateAttendee as updateAttendeeRequest} from 'app/services/attendeesService';
 
 interface ItemListProps{
     attendees: Attendee[];
@@ -13,10 +15,11 @@ interface ItemListProps{
 }
 
 const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
-  const [localAttendees, setLocalAttendees] = useState<Attendee[]>([]);
+  const [localAttendees, setLocalAttendees] = useState<Attendee[]>([...attendees].sort((a,b) => a.orderIndex - b.orderIndex));
+  const [dragged, setDragged] = useState<boolean>(false);
 
   useEffect(() => {
-    setLocalAttendees(attendees);
+    setLocalAttendees([...attendees].sort((a,b) => a.orderIndex - b.orderIndex));
   }, [attendees]);
 
   const moveAttendee = useCallback((dragIndex: number, hoverIndex: number) => {
@@ -30,6 +33,14 @@ const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
     );
   }, []);
 
+  const updateAttendee = useCallback((id: string) => {
+    const newId = getOrderId(localAttendees, id);
+    console.log(newId);
+    updateAttendeeRequest(id, {orderIndex: newId}).then(() => {
+      invalidate();
+    });
+  }, [localAttendees, invalidate]);
+
   const renderAttendee = useCallback(
     (attendee: Attendee, index: number) => {
       return (
@@ -39,16 +50,15 @@ const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
           index={index}
           invalidate={invalidate}
           moveAttendee={moveAttendee}
-          updateAttendees={updateAttendees}
+          updateAttendee={updateAttendee}
+          setDragged={setDragged}
         />
       );
     },
-    [invalidate, moveAttendee],
+    [invalidate, moveAttendee, updateAttendee],
   );
 
-  const updateAttendees = () => {
-    console.log('teraz');
-  };
+  const copyOfAttendees = dragged ? [...localAttendees] : [...localAttendees].sort((a,b) => a.orderIndex - b.orderIndex);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -59,7 +69,7 @@ const ItemList: React.FC<ItemListProps> = ({attendees, invalidate}) => {
         flex-direction: row;
       `}
       >
-        {localAttendees.sort((a,b) => b.orderIndex + a.orderIndex).map((attendee, index) => (
+        {copyOfAttendees.map((attendee, index) => (
           renderAttendee(attendee, index)
         ))}
       </div>

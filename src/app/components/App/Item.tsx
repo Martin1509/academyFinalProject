@@ -8,7 +8,7 @@ import type {Identifier, XYCoord} from 'dnd-core';
 import {useDrag, useDrop} from 'react-dnd';
 
 import {Attendee} from 'app/models/App/Attendee';
-import {deleteAttendee, updateAttendee} from 'app/services/attendeesService';
+import {deleteAttendee, updateAttendee as updateAttendeeRequest} from 'app/services/attendeesService';
 
 const ItemTypes = {
   ATTENDEE: 'attendee'
@@ -23,21 +23,21 @@ interface DragItem {
 interface ItemProps {
     attendee: Attendee,
     index: number;
-    updateAttendees: () => void;
+    updateAttendee: (id: string) => void;
     invalidate: () => void;
     moveAttendee: (dragIndex: number, hoverIndex: number) => void;
+    setDragged: (dragged: boolean) => void;
 }
 
-const Item: FC<ItemProps> = ({attendee, index, invalidate, moveAttendee, updateAttendees}) => {
+const Item: FC<ItemProps> = ({attendee, index, invalidate, moveAttendee, updateAttendee, setDragged}) => {
   const [localChange, setLocalChange] = useState<string>('');
   const id = attendee.id;
 
-  if (localChange === attendee.moreInfo){
+  if (localChange === attendee.moreInfo && attendee.moreInfo !== ''){
     setLocalChange('');
   }
 
   const info = localChange !== '' ? localChange : attendee.moreInfo;
-
   const onChange = (e: ContentEditableEvent) => {
     if (attendee.moreInfo === e.target.value!){
       setLocalChange('');
@@ -47,7 +47,7 @@ const Item: FC<ItemProps> = ({attendee, index, invalidate, moveAttendee, updateA
   };
 
   const handleUpdate = () => {
-    updateAttendee(attendee.id, {moreInfo: localChange}).then(() => {
+    updateAttendeeRequest(attendee.id, {moreInfo: localChange}).then(() => {
       invalidate();
     });
   };
@@ -56,13 +56,14 @@ const Item: FC<ItemProps> = ({attendee, index, invalidate, moveAttendee, updateA
   const [{handlerId}, drop] = useDrop<
     DragItem,
     void,
-    { handlerId: Identifier | null }
+    { handlerId: Identifier | null}
   >({
     accept: ItemTypes.ATTENDEE,
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId()
-      };
+    collect: (monitor) => ({
+      handlerId: monitor.getHandlerId()
+    }),
+    drop(){
+      updateAttendee(attendee.id);
     },
     hover(item: DragItem, monitor) {
       if (!ref.current) {
@@ -108,8 +109,8 @@ const Item: FC<ItemProps> = ({attendee, index, invalidate, moveAttendee, updateA
   });
 
   useEffect(() => {
-    isDragging && updateAttendees();
-  }, [isDragging]);
+    setDragged(isDragging);
+  }, [isDragging, setDragged]);
 
   const opacity = isDragging ? 0 : 1;
   drag(drop(ref));
